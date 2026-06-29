@@ -103,3 +103,41 @@ npm run test:watch # ウォッチモード
 - `zValidator` は FormRequest に相当する。ルートに直接書くこともできるが、結局 `validators/` に切り出した
 - DIはフレームワーク任せではなく、UseCaseの第1引数にリポジトリを渡す形で自前で行う
 - Eloquent と違い、Drizzle は SQL に近い記述で直感的に扱いやすい
+
+## 依存性の注入（DI）
+
+各ルートはファクトリ関数として定義し、依存するリポジトリを引数で受け取る。
+
+```ts
+// routes/books.ts
+export function createBooksRoute(repo: BookRepository) {
+  const app = new Hono()
+  // ...
+  return app
+}
+```
+
+`app.ts` をコンポジションルートとし、リポジトリの生成と注入をここに集約する。
+
+```ts
+// app.ts
+const bookRepo = new DrizzleBookRepository()
+app.route('/api/books', createBooksRoute(bookRepo))
+```
+
+ルートファイルはドメインインターフェース（`BookRepository` など）にのみ依存する。実装クラス（`DrizzleBookRepository`）はルートが知らなくてよい。この設計により、テストでは任意のリポジトリ実装を差し込める。
+
+```ts
+// テストファイル
+app.route('/api/books', createBooksRoute(new DrizzleBookRepository()))
+```
+
+各ルートのファクトリ関数名と引数は以下の通り。
+
+| ファイル | ファクトリ関数 | 引数 |
+|---|---|---|
+| `routes/auth.ts` | `createAuthRoute` | `userRepo: UserRepository, refreshTokenRepo: RefreshTokenRepository` |
+| `routes/profile.ts` | `createProfileRoute` | `repo: UserRepository` |
+| `routes/authors.ts` | `createAuthorsRoute` | `repo: AuthorRepository` |
+| `routes/books.ts` | `createBooksRoute` | `repo: BookRepository` |
+| `routes/users.ts` | `createUsersRoute` | `repo: UserRepository` |

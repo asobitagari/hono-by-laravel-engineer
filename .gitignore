@@ -24,6 +24,11 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# build output
+dist/
+drizzle.config.js
+vitest.config.js
+
 # misc
 .DS_Store
 
