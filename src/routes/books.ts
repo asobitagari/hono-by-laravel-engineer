@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { authMiddleware } from '../middlewares/authMiddleware.js'
 import { adminMiddleware } from '../middlewares/adminMiddleware.js'
-import { DrizzleBookRepository } from '../infrastructure/repositories/DrizzleBookRepository.js'
+import { type BookRepository } from '../domain/books/BookRepository.js'
 import { getBooksUseCase } from '../useCases/books/getBooksUseCase.js'
 import { getBookUseCase } from '../useCases/books/getBookUseCase.js'
 import { createBookUseCase } from '../useCases/books/createBookUseCase.js'
@@ -10,7 +10,7 @@ import { updateBookUseCase } from '../useCases/books/updateBookUseCase.js'
 import { deleteBookUseCase } from '../useCases/books/deleteBookUseCase.js'
 import { createBookSchema, updateBookSchema } from '../validators/books.js'
 
-const repo = new DrizzleBookRepository()
+export function createBooksRoute(repo: BookRepository) {
 const app = new Hono()
 
 app.get('/', async (c) => {
@@ -43,4 +43,5 @@ app.delete('/:id', authMiddleware, adminMiddleware, async (c) => {
   return c.json(result)
 })
 
-export { app as booksRoute }
+  return app
+}

@@ -1,15 +1,14 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
-import { DrizzleUserRepository } from '../infrastructure/repositories/DrizzleUserRepository.js'
-import { DrizzleRefreshTokenRepository } from '../infrastructure/repositories/DrizzleRefreshTokenRepository.js'
+import { type UserRepository } from '../domain/users/UserRepository.js'
+import { type RefreshTokenRepository } from '../domain/refreshTokens/RefreshTokenRepository.js'
 import { loginUseCase } from '../useCases/auth/loginUseCase.js'
 import { logoutUseCase } from '../useCases/auth/logoutUseCase.js'
 import { refreshTokenUseCase } from '../useCases/auth/refreshTokenUseCase.js'
 import { registerUseCase } from '../useCases/auth/registerUseCase.js'
 import { loginSchema, logoutSchema, refreshTokenSchema, registerSchema } from '../validators/auth.js'
 
-const userRepo = new DrizzleUserRepository()
-const refreshTokenRepo = new DrizzleRefreshTokenRepository()
+export function createAuthRoute(userRepo: UserRepository, refreshTokenRepo: RefreshTokenRepository) {
 const app = new Hono()
 
 app.post('/login', zValidator('json', loginSchema), async (c) => {
@@ -48,4 +47,5 @@ app.post('/refresh-token', zValidator('json', refreshTokenSchema), async (c) => 
   }
 })
 
-export { app as authRoute }
+  return app
+}

@@ -1,12 +1,14 @@
 import { describe, expect, test, beforeEach, afterEach } from 'vitest'
 import { Hono } from 'hono'
-import { authRoute } from '../../routes/auth.js'
+import { createAuthRoute } from '../../routes/auth.js'
+import { DrizzleUserRepository } from '../../infrastructure/repositories/DrizzleUserRepository.js'
+import { DrizzleRefreshTokenRepository } from '../../infrastructure/repositories/DrizzleRefreshTokenRepository.js'
 import { db } from '../../db/index.js'
 import { users } from '../../db/schema.js'
 import { hashPassword } from '../../shared/password.js'
 
 const app = new Hono()
-app.route('/api/auth', authRoute)
+app.route('/api/auth', createAuthRoute(new DrizzleUserRepository(), new DrizzleRefreshTokenRepository()))
 
 beforeEach(async () => {
   await db.insert(users).values({

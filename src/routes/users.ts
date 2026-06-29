@@ -2,14 +2,14 @@ import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { authMiddleware } from '../middlewares/authMiddleware.js'
 import { adminMiddleware } from '../middlewares/adminMiddleware.js'
-import { DrizzleUserRepository } from '../infrastructure/repositories/DrizzleUserRepository.js'
+import { type UserRepository } from '../domain/users/UserRepository.js'
 import { getUsersUseCase } from '../useCases/users/getUsersUseCase.js'
 import { getUserUseCase } from '../useCases/users/getUserUseCase.js'
 import { updateUserUseCase } from '../useCases/users/updateUserUseCase.js'
 import { deleteUserUseCase } from '../useCases/users/deleteUserUseCase.js'
 import { updateUserSchema } from '../validators/users.js'
 
-const repo = new DrizzleUserRepository()
+export function createUsersRoute(repo: UserRepository) {
 const app = new Hono()
 
 app.get('/', async (c) => {
@@ -36,4 +36,5 @@ app.delete('/:id', authMiddleware, adminMiddleware, async (c) => {
   return c.json(result)
 })
 
-export { app as usersRoute }
+  return app
+}

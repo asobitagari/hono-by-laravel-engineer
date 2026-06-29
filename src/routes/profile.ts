@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { authMiddleware, type AuthVariables } from '../middlewares/authMiddleware.js'
-import { DrizzleUserRepository } from '../infrastructure/repositories/DrizzleUserRepository.js'
+import { type UserRepository } from '../domain/users/UserRepository.js'
 import { updateProfileNameService } from '../services/profile/updateProfileNameService.js'
 import { updatePasswordService } from '../services/profile/updatePasswordService.js'
 import { updateProfileSchema, updatePasswordSchema } from '../validators/profile.js'
 
-const repo = new DrizzleUserRepository()
+export function createProfileRoute(repo: UserRepository) {
 const app = new Hono<{ Variables: AuthVariables }>()
 
 app.use('*', authMiddleware)
@@ -35,4 +35,5 @@ app.put('/password', zValidator('json', updatePasswordSchema), async (c) => {
   }
 })
 
-export { app as profileRoute }
+  return app
+}

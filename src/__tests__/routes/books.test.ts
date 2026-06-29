@@ -1,13 +1,14 @@
 import { describe, expect, test, beforeEach, afterEach } from 'vitest'
 import { Hono } from 'hono'
-import { booksRoute } from '../../routes/books.js'
+import { createBooksRoute } from '../../routes/books.js'
+import { DrizzleBookRepository } from '../../infrastructure/repositories/DrizzleBookRepository.js'
 import { db } from '../../db/index.js'
 import { authors, books, users } from '../../db/schema.js'
 import { hashPassword } from '../../shared/password.js'
 import { generateAccessToken } from '../../shared/token.js'
 
 const app = new Hono()
-app.route('/api/books', booksRoute)
+app.route('/api/books', createBooksRoute(new DrizzleBookRepository()))
 
 let adminToken: string
 let normalToken: string

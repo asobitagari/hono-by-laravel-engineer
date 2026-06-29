@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { authMiddleware } from '../middlewares/authMiddleware.js'
 import { adminMiddleware } from '../middlewares/adminMiddleware.js'
-import { DrizzleAuthorRepository } from '../infrastructure/repositories/DrizzleAuthorRepository.js'
+import { type AuthorRepository } from '../domain/authors/AuthorRepository.js'
 import { getAuthorsUseCase } from '../useCases/authors/getAuthorsUseCase.js'
 import { getAuthorUseCase } from '../useCases/authors/getAuthorUseCase.js'
 import { createAuthorUseCase } from '../useCases/authors/createAuthorUseCase.js'
@@ -10,7 +10,7 @@ import { updateAuthorUseCase } from '../useCases/authors/updateAuthorUseCase.js'
 import { deleteAuthorUseCase } from '../useCases/authors/deleteAuthorUseCase.js'
 import { createAuthorSchema, updateAuthorSchema } from '../validators/authors.js'
 
-const repo = new DrizzleAuthorRepository()
+export function createAuthorsRoute(repo: AuthorRepository) {
 const app = new Hono()
 
 app.get('/', async (c) => {
@@ -43,4 +43,5 @@ app.delete('/:id', authMiddleware, adminMiddleware, async (c) => {
   return c.json(result)
 })
 
-export { app as authorsRoute }
+  return app
+}
